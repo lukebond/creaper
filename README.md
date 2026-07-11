@@ -65,16 +65,30 @@ REAPER auto-selects the **JACK backend**, which reaches the host PipeWire via
 
 ### Recording from a hardware interface
 
-Inputs need wiring in the PipeWire graph. Plug the interface in, then on the
-host:
+REAPER's inputs need to be cabled to your interface in the PipeWire graph
+(WirePlumber otherwise tends to wire your *default mic* into REAPER instead).
+Two ways:
+
+**Automatic (recommended).** Name your interface and creaper keeps REAPER's
+inputs cabled to it for the whole session — surviving hotplug and restarts:
 
 ```bash
-./scripts/link-input.sh Mustang     # match your device by name substring
+CREAPER_INPUT_MATCH=Mustang ./run.sh      # substring of your device's name
 ```
 
-This connects the device's capture ports to `REAPER:in1/in2` and clears any
-stray auto-links (WirePlumber tends to wire your default mic into REAPER). Then
-in REAPER: **Ctrl+T** (new track) → click the round **record-arm** button
+A watcher (`scripts/creaper-autolink.sh`) bundled in the image links the device
+to `REAPER:in1/in2` and removes any other links into REAPER's inputs. Options:
+- `CREAPER_INPUT_MATCH` — substring identifying the device (opt-in; unset = off).
+- `CREAPER_INPUT_EXCLUSIVE=0` — additive mode: keep other input links too (for
+  recording several sources at once). Default `1` (exclusive).
+
+**Manual, one-shot.** Or wire it once by hand after launch:
+
+```bash
+./scripts/link-input.sh Mustang
+```
+
+Then in REAPER: **Ctrl+T** (new track) → click the round **record-arm** button
 (turns red) → right-click it → **Input → Stereo → 1/2** → right-click →
 **Monitoring → On** → play and watch the track meter → press **Record**.
 

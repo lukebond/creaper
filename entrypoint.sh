@@ -22,5 +22,14 @@ for _ in $(seq 1 100); do
 done
 
 export DISPLAY="${DISPLAY_NUM}"
+
+# Optional: auto-cable a chosen capture interface into REAPER's inputs. The
+# watcher polls until REAPER's ports exist, so starting it before REAPER is fine.
+# No-ops unless CREAPER_INPUT_MATCH is set.
+if [ -n "${CREAPER_INPUT_MATCH:-}" ]; then
+    echo "[creaper] auto-linking input device matching '${CREAPER_INPUT_MATCH}'"
+    /usr/local/bin/creaper-autolink.sh &
+fi
+
 echo "[creaper] launching REAPER on DISPLAY=${DISPLAY}"
 exec reaper "$@"

@@ -28,6 +28,11 @@ args=(
 # Audio: hand the host PipeWire socket in. REAPER auto-connects via pipewire-jack.
 [ -S "${RTD}/pipewire-0" ] && args+=( -v "${RTD}/pipewire-0:/run/user/1000/pipewire-0" )
 
+# Optional input auto-linking (see scripts/creaper-autolink.sh):
+#   CREAPER_INPUT_MATCH=Mustang ./run.sh   → auto-cable that interface into REAPER
+[ -n "${CREAPER_INPUT_MATCH:-}" ]     && args+=( -e CREAPER_INPUT_MATCH="${CREAPER_INPUT_MATCH}" )
+[ -n "${CREAPER_INPUT_EXCLUSIVE:-}" ] && args+=( -e CREAPER_INPUT_EXCLUSIVE="${CREAPER_INPUT_EXCLUSIVE}" )
+
 # GPU: optional, speeds up Xwayland/GL. Skipped if absent.
 [ -d /dev/dri ] && args+=( --device /dev/dri )
 

@@ -36,7 +36,8 @@ RUN useradd -u "${UID}" -m -s /bin/bash reaper && \
     chmod 700 "/run/user/${UID}"
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY scripts/creaper-autolink.sh /usr/local/bin/creaper-autolink.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/creaper-autolink.sh
 
 USER ${UID}
 ENV XDG_RUNTIME_DIR=/run/user/1000 \
