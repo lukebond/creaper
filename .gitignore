@@ -1,0 +1,4 @@
+# nothing is built locally; just editor/OS cruft
+*.swp
+*~
+.DS_Store
