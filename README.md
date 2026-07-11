@@ -98,12 +98,28 @@ never touch host audio config.
 ### Latency
 
 Default is PipeWire's quantum (≈21 ms at 1024/48k) — fine for mixing, high for
-tracking. To go lower, uncomment the realtime opt-ins in `run.sh`
-(`--ulimit rtprio=95 --cap-add SYS_NICE`) and lower the PipeWire quantum. For
-absolute lowest latency you can switch REAPER to **raw ALSA** (uncomment
-`--device /dev/snd`), but on a PipeWire host that means prying the interface
-away from PipeWire — only worth it with a dedicated interface. See the audio
-discussion in the design notes.
+tracking. For lower latency:
+
+```bash
+CREAPER_LOWLATENCY=1 ./run.sh                       # ~128-sample buffer + realtime
+CREAPER_LOWLATENCY=1 CREAPER_QUANTUM=256/48000 ./run.sh   # safer/higher if 128 glitches
+```
+
+Buffer size is the actual latency knob; the realtime flags
+(`--ulimit rtprio=95 --cap-add SYS_NICE`) don't lower latency themselves — they
+keep a *small* buffer from dropping out. **Cost:** an RT thread can starve the
+host if it misbehaves, plus a small privilege bump — hence opt-in.
+
+**How to tell it worked:** REAPER's title bar shows the live buffer and latency,
+e.g. `… 1024spls ~21.3/21.3ms JACK`. With the flag it should drop to roughly
+`… 128spls ~2.7/2.7ms`. Watch that number, and listen for clicks/dropouts (that's
+what the RT flag prevents) — especially under load. On the host, `pw-top` shows
+the quantum and an xrun/ERR counter per node for an objective stability check.
+
+For *absolute* lowest latency you'd switch REAPER to **raw ALSA**, but on a
+PipeWire host that means first prying the interface away from PipeWire
+(`wpctl set-profile <id> 0`, restore on exit) — a heavier, exclusive mode not yet
+implemented.
 
 ## Portability to another machine
 

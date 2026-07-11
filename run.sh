@@ -36,12 +36,24 @@ args=(
 # GPU: optional, speeds up Xwayland/GL. Skipped if absent.
 [ -d /dev/dri ] && args+=( --device /dev/dri )
 
-# --- Low-latency opt-ins (uncomment when you want to push the buffer down) ------
-# Realtime scheduling for JACK/PipeWire (Docker blocks RT by default):
-#   args+=( --ulimit rtprio=95 --cap-add SYS_NICE )
-# Raw ALSA instead of PipeWire (lowest latency, exclusive device access — the
-# host's PipeWire must NOT be holding the interface):
-#   args+=( --device /dev/snd )
+# --- Low latency (opt-in): CREAPER_LOWLATENCY=1 ./run.sh -----------------------
+# Buffer size is the real latency knob; realtime scheduling just makes a small
+# buffer stable (prevents dropouts). This lowers REAPER's requested PipeWire
+# quantum AND grants RT so it holds. Override the buffer with e.g.
+# CREAPER_QUANTUM=256/48000 (bigger = safer, higher latency).
+#
+# Cost (why it's off by default): an RT-scheduled thread can starve the host if
+# it misbehaves, and --cap-add is a small privilege increase. No benefit at the
+# default buffer, so opt-in only.
+if [ "${CREAPER_LOWLATENCY:-0}" = "1" ]; then
+    args+=(
+        --ulimit rtprio=95
+        --cap-add SYS_NICE
+        -e PIPEWIRE_LATENCY="${CREAPER_QUANTUM:-128/48000}"
+    )
+fi
+# Raw ALSA (lowest latency, exclusive; needs freeing the device from PipeWire) is
+# a future mode — see README.
 # -------------------------------------------------------------------------------
 
 exec docker run "${args[@]}" "${IMAGE}" "$@"
