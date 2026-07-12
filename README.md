@@ -58,6 +58,26 @@ Wayland + PipeWire sockets in, persists REAPER config in a `creaper-home`
 volume, and maps `~/reaper` on the host to the project/recording folder
 (override with `CREAPER_PROJECTS=/path ./run.sh`).
 
+## App launcher (.desktop)
+
+To launch creaper from your Wayland app launcher (fuzzel / rofi / wofi / niri's
+mod-d) instead of a terminal:
+
+```bash
+./scripts/install-desktop.sh
+```
+
+This installs `~/.local/share/applications/creaper.desktop` and REAPER's icon.
+Any `CREAPER_*` options set when you run the installer are baked into the entry:
+
+```bash
+CREAPER_INPUT_MATCH=Mustang CREAPER_LOWLATENCY=1 ./scripts/install-desktop.sh
+```
+
+Uninstall with `rm ~/.local/share/applications/creaper.desktop`. (`run.sh`
+attaches a terminal only when run from one, so it works both from a shell and
+from a no-TTY launcher.)
+
 ## Audio
 
 REAPER auto-selects the **JACK backend**, which reaches the host PipeWire via

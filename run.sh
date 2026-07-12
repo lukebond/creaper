@@ -16,7 +16,7 @@ PROJECTS="${CREAPER_PROJECTS:-$HOME/reaper}"
 mkdir -p "$PROJECTS"
 
 args=(
-    --rm -it
+    --rm
     --name creaper
     -e WAYLAND_DISPLAY="${WAYLAND_DISPLAY}"
     -e XDG_RUNTIME_DIR=/run/user/1000
@@ -24,6 +24,10 @@ args=(
     -v creaper-home:/home/reaper                 # REAPER config/prefs/license
     -v "${PROJECTS}:/home/reaper/projects"       # your projects/recordings, on the host
 )
+
+# Attach an interactive TTY only when run from a real terminal, so launching from
+# a .desktop entry / app launcher (which has no TTY) works too.
+[ -t 0 ] && [ -t 1 ] && args+=( -it )
 
 # Audio: hand the host PipeWire socket in. REAPER auto-connects via pipewire-jack.
 [ -S "${RTD}/pipewire-0" ] && args+=( -v "${RTD}/pipewire-0:/run/user/1000/pipewire-0" )
