@@ -54,9 +54,14 @@ docker build -t creaper:latest --build-arg UID=$(id -u) .
 ```
 
 REAPER opens as a native window on your compositor. `run.sh` mounts your
-Wayland + PipeWire sockets in, persists REAPER config in a `creaper-home`
-volume, and maps `~/reaper` on the host to the project/recording folder
-(override with `CREAPER_PROJECTS=/path ./run.sh`).
+Wayland + PipeWire sockets in and bind-mounts `~/reaper` on the host as the
+container's home — so **everything REAPER writes** (config, license, projects,
+recordings) lives under `~/reaper`, nothing hidden in a Docker volume. Override
+the location with `CREAPER_HOME=/path ./run.sh`.
+
+By default REAPER saves new projects under `~/reaper/Documents/REAPER Media/`;
+set a different default in REAPER's Preferences → General → Paths if you'd rather
+projects land straight in `~/reaper`.
 
 ## App launcher (.desktop)
 

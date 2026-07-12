@@ -31,7 +31,7 @@ fi
 
 # Bake in whichever creaper options are set in the environment at install time.
 envline=""
-for v in CREAPER_IMAGE CREAPER_PROJECTS CREAPER_INPUT_MATCH CREAPER_INPUT_EXCLUSIVE \
+for v in CREAPER_IMAGE CREAPER_HOME CREAPER_INPUT_MATCH CREAPER_INPUT_EXCLUSIVE \
          CREAPER_LOWLATENCY CREAPER_QUANTUM; do
     [ -n "${!v:-}" ] && envline+=" $v=${!v}"
 done

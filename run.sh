@@ -10,10 +10,10 @@ WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"
 RTD="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 IMAGE="${CREAPER_IMAGE:-creaper:latest}"
 
-# Where REAPER projects/recordings land ON THE HOST (so they're not trapped in
-# the container). Override with CREAPER_PROJECTS=/path ./run.sh
-PROJECTS="${CREAPER_PROJECTS:-$HOME/reaper}"
-mkdir -p "$PROJECTS"
+# creaper's home ON THE HOST: config, license, projects, recordings — all here,
+# nothing hidden in a Docker volume. Override with CREAPER_HOME=/path ./run.sh
+CREAPER_HOME="${CREAPER_HOME:-$HOME/reaper}"
+mkdir -p "$CREAPER_HOME"
 
 args=(
     --rm
@@ -21,8 +21,7 @@ args=(
     -e WAYLAND_DISPLAY="${WAYLAND_DISPLAY}"
     -e XDG_RUNTIME_DIR=/run/user/1000
     -v "${RTD}/${WAYLAND_DISPLAY}:/run/user/1000/${WAYLAND_DISPLAY}"
-    -v creaper-home:/home/reaper                 # REAPER config/prefs/license
-    -v "${PROJECTS}:/home/reaper/projects"       # your projects/recordings, on the host
+    -v "${CREAPER_HOME}:/home/reaper"            # everything REAPER writes lands on the host
 )
 
 # Attach an interactive TTY only when run from a real terminal, so launching from
