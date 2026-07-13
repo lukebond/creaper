@@ -146,6 +146,52 @@ PipeWire host that means first prying the interface away from PipeWire
 (`wpctl set-profile <id> 0`, restore on exit) — a heavier, exclusive mode not yet
 implemented.
 
+## Plugins
+
+REAPER *discovers* plugins by scanning folders — it doesn't install them itself.
+creaper keeps the **base image plugin-free**; plugin sets are opt-in image
+variants layered on top (so non-users carry no bloat).
+
+### Native-Linux plugin sets (addons)
+
+```bash
+./scripts/build.sh guitar            # base + guitar -> creaper:guitar
+CREAPER_IMAGE=creaper:guitar ./run.sh
+```
+
+The guitar addon (`addons/guitar.Dockerfile`) installs — via pacman + the OSAMC
+[pro-audio binary repo](https://github.com/osam-cologne/archlinux-proaudio), no
+AUR build step — GxPlugins, Guitarix, Dragonfly Reverb, LSP (incl. its Impulse
+cab loader), **Neural Amp Modeler (NAM)**, and **Ratatouille**. All free/open
+source; they land in system scan dirs and just appear in REAPER's FX browser.
+
+Add your own set as `addons/<name>.Dockerfile` (`FROM ${BASE}`); addons stack:
+`./scripts/build.sh guitar windows`.
+
+### Amp models + cabinet IRs (the *data*)
+
+The amp sims do nothing without capture/IR files. Grab a free starter set into
+`~/reaper/tones` (persisted on the host):
+
+```bash
+./scripts/fetch-tones.sh
+```
+
+Then browse to `~/reaper/tones/nam` in NAM/Ratatouille and `~/reaper/tones/ir` in
+the LSP Impulse loader — these formats have no auto-scan folder, you load them by
+hand.
+
+### Proprietary / downloaded plugins (e.g. Audio Assault Amp Locker)
+
+Plugins that aren't in a repo can't be baked into the image. Drop their Linux
+`.vst3`/`.so` into `~/reaper/.vst3` (persisted on the host) and re-scan in REAPER
+(Preferences → Plug-ins → VST → Re-scan).
+
+### Windows VST plugins
+
+Planned as an `addons/windows.Dockerfile` variant (Wine + yabridge), same opt-in
+pattern — so Wine's ~1 GB only lands if you build it.
+
 ## Portability to another machine
 
 - Rebuild with `--build-arg UID=$(id -u)` if that host's user isn't uid 1000.
