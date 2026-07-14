@@ -205,8 +205,16 @@ once — it's the container's home, so they persist across rebuilds.
    mkdir -p ~/reaper/.vst3
    cp -r /path/to/unzipped/AmpLocker.vst3 ~/reaper/.vst3/
    ```
-   If the download also includes an amp/cab **data** folder or a Linux README,
-   place those per its instructions (Audio Assault ships the modules separately).
+   Amp Locker also ships an **`AmpLockerData`** folder (its amps, cabs, IRs,
+   presets) — the plugin is empty without it. Per its `How To Install.txt`, copy
+   the folder's *contents* into the path it expects:
+   ```bash
+   D="$HOME/reaper/Audio Assault/PluginData/Audio Assault/AmpLockerData"
+   mkdir -p "$D" && cp -a /path/to/unzipped/AmpLockerData/. "$D/"
+   ```
+   The plugin looks under `~/Audio Assault/…`; since the container's home *is*
+   `~/reaper`, that resolves correctly. (The zip is Mac-made — ignore the
+   `__MACOSX/` and `.DS_Store` junk.)
 3. In REAPER: **Preferences → Plug-ins → VST → Re-scan** (or restart REAPER).
    Amp Locker then appears in the FX browser — remember to enable **"always
    search all FX"** if you don't see it.
@@ -233,8 +241,8 @@ pattern — so Wine's ~1 GB only lands if you build it.
 - **Floating window placement:** `xwayland-satellite` doesn't give X apps a true
   global coordinate space, so REAPER's remembered floating FX/plugin window
   positions may not land exactly. Everything else integrates cleanly.
-- Recordings live under `~/reaper` on the host (bind-mounted); REAPER
-  config/license live in the `creaper-home` Docker volume.
+- Everything (REAPER config, license, projects, recordings, hand-installed
+  plugins) lives under `~/reaper` on the host — nothing hidden in a Docker volume.
 
 ## podman vs docker
 
