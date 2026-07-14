@@ -189,9 +189,31 @@ hand.
 
 ### Proprietary / downloaded plugins (e.g. Audio Assault Amp Locker)
 
-Plugins that aren't in a repo can't be baked into the image. Drop their Linux
-`.vst3`/`.so` into `~/reaper/.vst3` (persisted on the host) and re-scan in REAPER
-(Preferences → Plug-ins → VST → Re-scan).
+Proprietary freeware and other vendor downloads can't be baked into the image
+(licensing), and their download URLs are version-pinned and change over time — so
+automating them just rots (the AUR `amp-locker-*-bin` packages break on every
+version bump for exactly this reason). Instead, drop them into `~/reaper` by hand,
+once — it's the container's home, so they persist across rebuilds.
+
+**Example — Audio Assault Amp Locker** (free amp-sim hub):
+
+1. Download the current **Linux** build from
+   <https://audioassault.mx/downloadAudioAssault>. The version and URL change, so
+   just take whatever Linux zip is offered — don't hardcode it anywhere.
+2. Unzip it and copy the **`.vst3`** bundle into `~/reaper/.vst3/`:
+   ```bash
+   mkdir -p ~/reaper/.vst3
+   cp -r /path/to/unzipped/AmpLocker.vst3 ~/reaper/.vst3/
+   ```
+   If the download also includes an amp/cab **data** folder or a Linux README,
+   place those per its instructions (Audio Assault ships the modules separately).
+3. In REAPER: **Preferences → Plug-ins → VST → Re-scan** (or restart REAPER).
+   Amp Locker then appears in the FX browser — remember to enable **"always
+   search all FX"** if you don't see it.
+
+The same pattern works for any downloaded Linux plugin: drop the `.vst3` / `.so` /
+`.clap` into the matching `~/reaper/.{vst3,vst,clap}` folder and re-scan. Because
+`~/reaper` is the persisted container home, it's a one-time step.
 
 ### Windows VST plugins
 
