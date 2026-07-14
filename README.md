@@ -163,7 +163,13 @@ The guitar addon (`addons/guitar.Dockerfile`) installs — via pacman + the OSAM
 [pro-audio binary repo](https://github.com/osam-cologne/archlinux-proaudio), no
 AUR build step — GxPlugins, Guitarix, Dragonfly Reverb, LSP (incl. its Impulse
 cab loader), **Neural Amp Modeler (NAM)**, and **Ratatouille**. All free/open
-source; they land in system scan dirs and just appear in REAPER's FX browser.
+source; they land in system scan dirs REAPER scans. REAPER 7 hosts **VST2, VST3,
+CLAP, and LV2**, so all of the above load natively.
+
+> **Can't find a plugin in the FX browser?** Enable **"always search all FX when
+> using the search field"** (options in the FX-add window). By default the search
+> is scoped to the selected folder, so plugins in other categories (LV2, CLAP, …)
+> won't show up until you turn this on.
 
 Add your own set as `addons/<name>.Dockerfile` (`FROM ${BASE}`); addons stack:
 `./scripts/build.sh guitar windows`.
